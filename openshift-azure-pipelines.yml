@@ -28,6 +28,6 @@ stages:
     - task: Docker@2
       inputs:
         containerRegistry: 'docker-hub-connection'
-        repository: '''darshanadinushal/openshift-azuredevops'
+        repository: 'darshanadinushal/openshift-azuredevops'
         command: 'push'
         tags: '$(tag)'
