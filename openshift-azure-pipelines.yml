@@ -28,17 +28,18 @@ stages:
         tags: '$(tag)'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Test'
+      displayName: 'Run Test'
       inputs:
         command: test
         projects: 'openshiftapplicationtest/openshiftapplicationtest.csproj'
-        arguments: '--configuration $(buildConfiguration) --collect "Code coverage'    
+        publishTestResults: true
+        arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'    
       
     - task: PublishCodeCoverageResults@1
-      displayName: 'publish code coverage $(Agent.TempDirectory)/**/coverage.cobertura.xml'
+      displayName: 'Publish code coverage report'
       inputs:
         codeCoverageTool: 'Cobertura'
-        summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+        summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
 
     - task: Docker@2
       displayName: 'Docker Push Image'
