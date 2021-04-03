@@ -31,7 +31,7 @@ stages:
       displayName: 'Test'
       inputs:
         command: test
-        projects: 'openshiftapplicationtest.csproj'
+        projects: 'openshiftapplicationtest/openshiftapplicationtest.csproj'
         arguments: '--configuration $(buildConfiguration) --collect "Code coverage'    
       
     - task: PublishCodeCoverageResults@1
