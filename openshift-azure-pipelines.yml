@@ -7,6 +7,7 @@ pool:
 variables:
   solution: '**/*.sln'
   tag: '$(Build.BuildId)'
+  buildConfiguration: 'Release'
 
 
 stages: 
@@ -24,6 +25,12 @@ stages:
         Dockerfile: 'openshiftapplication/Dockerfile'
         buildContext: '.'
         tags: '$(tag)'
+
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: test
+        projects: 'openshiftapplicationtest/**/*Tests/*.csproj'
+        arguments: '--configuration $(buildConfiguration)'    
 
     - task: Docker@2
       inputs:
