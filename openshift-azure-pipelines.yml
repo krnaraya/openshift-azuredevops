@@ -1,0 +1,33 @@
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  solution: '**/*.sln'
+  tag: '$(Build.BuildId)'
+
+
+stages: 
+- stage: Build
+  displayName: Build
+  jobs:
+  - job: BuildJob
+    steps: 
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'docker-hub-connection'
+        repository: 'darshanadinushal/openshift-azuredevops'
+        command: 'build'
+        Dockerfile: 'openshiftapplication/Dockerfile'
+        buildContext: '.'
+        tags: '$(tag)'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'docker-hub-connection'
+        repository: '''darshanadinushal/openshift-azuredevops'
+        command: 'push'
+        tags: '$(tag)'
