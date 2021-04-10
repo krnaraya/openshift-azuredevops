@@ -20,8 +20,8 @@ stages:
     - task: Docker@2
       displayName: 'Docker build & Create Docker Image'
       inputs:
-        containerRegistry: 'docker-hub-connection'
-        repository: 'darshanadinushal/openshift-azuredevops'
+        containerRegistry: 'openshift-image-registry'
+        repository: 'darshana-dev/imagestream-dev'
         command: 'build'
         Dockerfile: 'openshiftapplication/Dockerfile'
         buildContext: '.'
