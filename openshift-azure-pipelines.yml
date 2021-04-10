@@ -117,6 +117,6 @@ stages:
       displayName: 'Deploy To UAT'
       inputs:
         connectionType: 'OpenShift Connection Service'
-        openshiftService: 'OpenShiftClusterServiceConnection'
+        openshiftService: 'openshift-cluster-connection'
         cmd: 'oc set triggers dc/sample-uat --from-image=darshana-uat/imagestream-uat:$(tag) -c sample-dev'
         uselocalOc: true
