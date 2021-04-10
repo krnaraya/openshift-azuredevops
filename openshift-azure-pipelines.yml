@@ -17,6 +17,17 @@ stages:
   - job: BuildJob
     steps: 
 
+    - task: DownloadSecureFile@1
+      name: caCertificate
+      displayName: 'Download CA certificate'
+      inputs:
+        secureFile: 'tls.crt'
+    - script: |
+        echo Installing $(caCertificate.secureFilePath) to the trusted CA directory...
+        sudo chown root:root $(caCertificate.secureFilePath)
+        sudo chmod a+r $(caCertificate.secureFilePath)
+        sudo ln -s -t /etc/ssl/certs/ $(caCertificate.secureFilePath)
+
     - task: Docker@2
       displayName: 'Docker build & Create Docker Image'
       inputs:
@@ -44,7 +55,7 @@ stages:
     - task: Docker@2
       displayName: 'Docker Push Image'
       inputs:
-        containerRegistry: 'docker-hub-connection'
-        repository: 'darshanadinushal/openshift-azuredevops'
+        containerRegistry: 'openshift-image-registry'
+        repository: 'darshana-dev/imagestream-dev'
         command: 'push'
         tags: '$(tag)'
