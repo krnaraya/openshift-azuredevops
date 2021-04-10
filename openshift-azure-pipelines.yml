@@ -101,7 +101,7 @@ stages:
       displayName: Tag Docker Image
       inputs:
         connectionType: 'OpenShift Connection Service'
-        openshiftService: 'OpenShiftClusterServiceConnection'
+        openshiftService: 'openshift-cluster-connection'
         cmd: 'oc -n darshana-dev  tag darshana-dev/imagestream-dev:$(tag) darshana-uat/imagestream-uat:$(tag)'
         uselocalOc: true
 
