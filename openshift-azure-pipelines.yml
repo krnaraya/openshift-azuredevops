@@ -89,3 +89,19 @@ stages:
         openshiftService: 'openshift-cluster-connection'
         cmd: 'oc set triggers dc/sample-dev --from-image=darshana-dev/imagestream-dev:$(tag) -c sample-dev'
         uselocalOc: true
+
+- stage: UAT 
+  displayName: Deploy UAT
+  jobs:
+  - job: Deploy
+    displayName: Deploy-UAT-Job
+    steps:
+    
+    - task: oc-cmd@2
+      displayName: Tag Docker Image
+      inputs:
+        connectionType: 'OpenShift Connection Service'
+        openshiftService: 'OpenShiftClusterServiceConnection'
+        cmd: 'oc -n darshana-dev  tag darshana-dev/imagestream-dev:$(tag) darshana-uat/imagestream-uat:$(tag)'
+        uselocalOc: true
+
