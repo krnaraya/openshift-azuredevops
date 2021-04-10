@@ -5,10 +5,16 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  solution: '**/*.sln'
   tag: '$(Build.BuildId)'
   buildConfiguration: 'Release'
-
+  project-name-dev: 'darshana-dev'
+  project-name-uat: 'darshana-uat'
+  image-repository-dev: 'imagestream-dev'
+  image-repository-uat: 'imagestream-dev'
+  development-cfg-dev: 'sample-dev'
+  development-cfg-uat: 'sample-uat'
+  container-name-dev: 'sample-dev'
+  container-name-uat: 'sample-uat'
 
 stages: 
 - stage: Build
@@ -32,7 +38,7 @@ stages:
       displayName: 'Docker build & Create Docker Image'
       inputs:
         containerRegistry: 'openshift-image-registry'
-        repository: 'darshana-dev/imagestream-dev'
+        repository: '$(project-name-dev)/$(image-repository-dev)'
         command: 'build'
         Dockerfile: 'openshiftapplication/Dockerfile'
         buildContext: '.'
@@ -56,7 +62,7 @@ stages:
       displayName: 'Docker Push Image'
       inputs:
         containerRegistry: 'openshift-image-registry'
-        repository: 'darshana-dev/imagestream-dev'
+        repository: '$(project-name-dev)/$(image-repository-dev)'
         command: 'push'
         tags: '$(tag)'
 
@@ -79,7 +85,7 @@ stages:
       inputs:
         connectionType: 'OpenShift Connection Service'
         openshiftService: 'openshift-cluster-connection'
-        cmd: 'oc project darshana-dev'
+        cmd: 'oc project $(project-name-dev)'
         uselocalOc: true
 
     - task: oc-cmd@2
@@ -87,7 +93,7 @@ stages:
       inputs:
         connectionType: 'OpenShift Connection Service'
         openshiftService: 'openshift-cluster-connection'
-        cmd: 'oc set triggers dc/sample-dev --from-image=darshana-dev/imagestream-dev:$(tag) -c sample-dev'
+        cmd: 'oc set triggers dc/$(development-cfg-dev) --from-image=$(project-name-dev)/$(image-repository-dev):$(tag) -c $(container-name-dev)'
         uselocalOc: true
 
 - stage: UAT 
@@ -102,7 +108,7 @@ stages:
       inputs:
         connectionType: 'OpenShift Connection Service'
         openshiftService: 'openshift-cluster-connection'
-        cmd: 'oc -n darshana-dev  tag darshana-dev/imagestream-dev:$(tag) darshana-uat/imagestream-uat:$(tag)'
+        cmd: 'oc -n $(project-name-dev)  tag $(project-name-dev)/$(image-repository-dev):$(tag) $(project-name-uat)/$(image-repository-uat):$(tag)'
         uselocalOc: true
 
     - task: oc-cmd@2
@@ -110,7 +116,7 @@ stages:
       inputs:
         connectionType: 'OpenShift Connection Service'
         openshiftService: 'openshift-cluster-connection'
-        cmd: 'oc project darshana-uat'
+        cmd: 'oc project $(project-name-uat)'
         uselocalOc: true
 
     - task: oc-cmd@2
@@ -118,5 +124,5 @@ stages:
       inputs:
         connectionType: 'OpenShift Connection Service'
         openshiftService: 'openshift-cluster-connection'
-        cmd: 'oc set triggers dc/sample-uat --from-image=darshana-uat/imagestream-uat:$(tag) -c sample-uat'
+        cmd: 'oc set triggers dc/$(development-cfg-uat) --from-image=$(project-name-uat)/$(image-repository-uat):$(tag) -c $(container-name-uat)'
         uselocalOc: true
