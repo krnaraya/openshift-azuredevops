@@ -59,3 +59,33 @@ stages:
         repository: 'darshana-dev/imagestream-dev'
         command: 'push'
         tags: '$(tag)'
+
+- stage: DEV 
+  displayName: Deploy DEV
+  jobs:
+  - job: Deploy
+    displayName: Deploy-DEV-Job
+    steps:
+    
+    - task: oc-setup@2
+      displayName: Connect With OpenShift
+      inputs:
+        connectionType: 'OpenShift Connection Service'
+        openshiftService: 'openshift-cluster-connection'
+        
+
+    - task: oc-cmd@2
+      displayName: Select DEV project
+      inputs:
+        connectionType: 'OpenShift Connection Service'
+        openshiftService: 'openshift-cluster-connection'
+        cmd: 'oc project darshana-dev'
+        uselocalOc: true
+
+    - task: oc-cmd@2
+      displayName: Deploy Docker Image To DEV
+      inputs:
+        connectionType: 'OpenShift Connection Service'
+        openshiftService: 'openshift-cluster-connection'
+        cmd: 'oc set triggers dc/darshana-dev --from-image=darshana-dev/imagestream-dev:$(tag) -c darshana-dev'
+        uselocalOc: true
