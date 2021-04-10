@@ -1,0 +1,24 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: sample-uat
+  namespace: darshana-uat
+  labels:
+    app: sample-uat
+    app.kubernetes.io/component: sample-uat
+    app.kubernetes.io/instance: sample-uat
+    app.kubernetes.io/part-of: sample-uat-app
+spec:
+  ports:
+    - name: 8080-tcp
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: sample-uat
+    deploymentconfig: sample-uat
+  clusterIP: 172.30.29.109
+  clusterIPs:
+    - 172.30.29.109
+  type: ClusterIP
+  sessionAffinity: None

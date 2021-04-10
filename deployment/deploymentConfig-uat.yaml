@@ -1,0 +1,70 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: sample-uat
+  generation: 4
+  namespace: darshana-uat
+  labels:
+    app: sample-uat
+    app.kubernetes.io/component: sample-uat
+    app.kubernetes.io/instance: sample-uat
+    app.kubernetes.io/name: imagestream-uat
+    app.kubernetes.io/part-of: sample-uat-app
+    app.openshift.io/runtime: dotnet
+    app.openshift.io/runtime-namespace: darshana-uat
+    app.openshift.io/runtime-version: '46'
+spec:
+  strategy:
+    type: Rolling
+    rollingParams:
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      timeoutSeconds: 600
+      maxUnavailable: 25%
+      maxSurge: 25%
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - sample-uat
+        from:
+          kind: ImageStreamTag
+          namespace: darshana-uat
+          name: 'imagestream-uat:46'
+        lastTriggeredImage: >-
+          image-registry.openshift-image-registry.svc:5000/darshana-uat/imagestream-uat@sha256:997d3d2788eb28d8cdc92d92c346b0094fa68b3dd5dc36ad0a81ba3c3ea0a924
+    - type: ConfigChange
+  replicas: 3
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    app: sample-uat
+    deploymentconfig: sample-uat
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: sample-uat
+        deploymentconfig: sample-uat
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+    spec:
+      containers:
+        - name: sample-uat
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/darshana-uat/imagestream-uat@sha256:997d3d2788eb28d8cdc92d92c346b0094fa68b3dd5dc36ad0a81ba3c3ea0a924
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
