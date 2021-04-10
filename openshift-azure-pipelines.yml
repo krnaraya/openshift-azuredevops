@@ -118,5 +118,5 @@ stages:
       inputs:
         connectionType: 'OpenShift Connection Service'
         openshiftService: 'openshift-cluster-connection'
-        cmd: 'oc set triggers dc/sample-uat --from-image=darshana-uat/imagestream-uat:$(tag) -c sample-dev'
+        cmd: 'oc set triggers dc/sample-uat --from-image=darshana-uat/imagestream-uat:$(tag) -c sample-uat'
         uselocalOc: true
