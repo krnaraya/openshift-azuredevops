@@ -87,5 +87,5 @@ stages:
       inputs:
         connectionType: 'OpenShift Connection Service'
         openshiftService: 'openshift-cluster-connection'
-        cmd: 'oc set triggers dc/darshana-dev --from-image=darshana-dev/imagestream-dev:$(tag) -c darshana-dev'
+        cmd: 'oc set triggers dc/sample-dev --from-image=darshana-dev/imagestream-dev:$(tag) -c sample-dev'
         uselocalOc: true
