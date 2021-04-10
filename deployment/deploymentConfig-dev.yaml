@@ -1,1 +1,71 @@
 
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: sample-dev
+  namespace: darshana-dev
+  labels:
+    app: sample-dev
+    app.kubernetes.io/component: sample-dev
+    app.kubernetes.io/instance: sample-dev
+    app.kubernetes.io/name: imagestream-dev
+    app.kubernetes.io/part-of: sample-dev-app
+    app.openshift.io/runtime: dotnet
+    app.openshift.io/runtime-namespace: darshana-dev
+    app.openshift.io/runtime-version: '35'
+spec:
+  strategy:
+    type: Rolling
+    rollingParams:
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      timeoutSeconds: 600
+      maxUnavailable: 25%
+      maxSurge: 25%
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - sample-dev
+        from:
+          kind: ImageStreamTag
+          namespace: darshana-dev
+          name: 'imagestream-dev:35'
+        lastTriggeredImage: >-
+          image-registry.openshift-image-registry.svc:5000/darshana-dev/imagestream-dev@sha256:de31815736ac095440e88a91b62bf5c64684d7e5d6d6168fef5184c97634bc2b
+  replicas: 3
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    app: sample-dev
+    deploymentconfig: sample-dev
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: sample-dev
+        deploymentconfig: sample-dev
+      annotations:
+        openshift.io/generated-by: OpenShiftWebConsole
+    spec:
+      containers:
+        - name: sample-dev
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/darshana-dev/imagestream-dev@sha256:7da19314b22115361f695ac8897363c6e17a490c93e447c043260cdaf4442e40
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+
