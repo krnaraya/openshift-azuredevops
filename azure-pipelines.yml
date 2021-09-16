@@ -15,6 +15,8 @@ variables:
   development-cfg-uat: 'sample-uat'
   container-name-dev: 'sample-dev'
   container-name-uat: 'sample-uat'
+  ROX_API_TOKEN: 'eyJhbGciOiJSUzI1NiIsImtpZCI6Imp3dGswIiwidHlwIjoiSldUIn0.eyJhdWQiOlsiaHR0cHM6Ly9zdGFja3JveC5pby9qd3Qtc291cmNlcyNhcGktdG9rZW5zIl0sImV4cCI6MTY2MzMzMDg1NCwiaWF0IjoxNjMxNzk0ODU0LCJpc3MiOiJodHRwczovL3N0YWNrcm94LmlvL2p3dCIsImp0aSI6IjJjNjlkOTAyLWI4OTUtNDg5NC04Yjg1LTUwNjE3NzhhYzQ1YiIsIm5hbWUiOiJhenVyZS1waXBlbGluZS10b2tlbiIsInJvbGVzIjpbIkFkbWluIl19.CzOp0rU54MvBcjvpUHTQ8s--6SLMfRKszfnL-YkCeHPX8gZCmEmYkWnJOsKR6F6yiy5fP7aeyGlNTrLzbo8G8HNTqJiM9sPUHsBMm1Q2i22HULUagyiAU_LxWg_XRQkGrqY-quaGIo8WHmKGNy5rywKinFcXjaNm-w-sdotYhD0gGjnpy5sfAKb4QNzQ10BfZ3ygJets6E6ESvrujzEnGLEWRU0ogqUIaWZqYrRwCT5qLzPOeW-16eG05TAFd6Nbw-LXGPMW_nuT6WhyRpVsOPYwlGSWmmzoXSLUC3_sUNcoYm_vuSeYRAHtk_u4D3QDeI0pWQYiw-BLr5sirvDDpws6LbHcMeB05cisj8Xqs1RE0BCv7Pfsnbxo7aEEcFxuoOJmYhba242a7cnN39_6FTO1fIaFUfVUqDQy4w94CwDl4Wlvxjr5bzAzfgDfTkACYc-Xj0zv8AZY8lljdgtgQ-Nnn7ypcnPXnv8xbaws3_Fp4SmqaUW48qiNW59P3TekoRuk8SA4LCa3yqvVoOTzLGcAtzHq9KVyL-SdasvNBckZA9_PqsBNKXEBVdbZ19JdpacF6Gdaa2SV0nsFS1LIwgiBDkMFe6hVsZO723oMXkEVrHxe7S_SP7q3sm6zSbWGoeLbXbrZLLe6vWS5Hx4-N_8w7iRcef7E5Po9eCCxcHc'
+  ROX_CENTRAL_ENDPOINT: 'central-stackrox.apps.cluster-5lskb.5lskb.sandbox1717.opentlc.com:443'
 
 stages: 
 - stage: Build
@@ -71,6 +73,26 @@ stages:
         repository: '$(project-name-dev)/$(image-repository-dev)'
         command: 'push'
         tags: '$(tag)'
+
+- stage: Scan
+  jobs:
+  - job: Scan
+    displayName: Scan with ACS
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        mkdir $(System.DefaultWorkingDirectory)/artifacts
+        curl -k -L -H "Authorization: Bearer $ROX_API_TOKEN" https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux --output ./roxctl
+        chmod +x ./roxctl
+        ./roxctl image scan -e $ROX_CENTRAL_ENDPOINT --insecure-skip-tls-verify --image '$(project-name-dev)/$(image-repository-dev)' --format csv > $(System.DefaultWorkingDirectory)/artifacts/image_scan.csv
+        ./roxctl image check -e $ROX_CENTRAL_ENDPOINT --insecure-skip-tls-verify --image '$(project-name-dev)/$(image-repository-dev)' > $(System.DefaultWorkingDirectory)/artifacts/image_check.txt
+      displayName: 'ACS image scan'
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: '$(System.DefaultWorkingDirectory)/artifacts'
+        artifact: 'ACS Output'
 
 - stage: DEV 
   displayName: Deploy DEV
