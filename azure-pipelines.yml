@@ -59,6 +59,12 @@ stages:
         summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
 
     - task: Docker@2
+      displayName: 'OpenShift Registry Login'
+      inputs:
+        containerRegistry: 'openshift-container-connection'
+        command: 'login'
+ 
+    - task: Docker@2
       displayName: 'Docker Push Image'
       inputs:
         containerRegistry: 'openshift-container-connection'
