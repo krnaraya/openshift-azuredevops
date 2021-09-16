@@ -37,7 +37,7 @@ stages:
     - task: Docker@2
       displayName: 'Docker build & Create Docker Image'
       inputs:
-        containerRegistry: 'openshift-image-registry'
+        containerRegistry: 'openshift-container-connection'
         repository: '$(project-name-dev)/$(image-repository-dev)'
         command: 'build'
         Dockerfile: 'openshiftapplication/Dockerfile'
@@ -77,14 +77,14 @@ stages:
       displayName: Connect With OpenShift
       inputs:
         connectionType: 'OpenShift Connection Service'
-        openshiftService: 'openshift-cluster-connection'
+        openshiftService: 'openshift-acs-demo'
         
 
     - task: oc-cmd@2
       displayName: Select DEV project
       inputs:
         connectionType: 'OpenShift Connection Service'
-        openshiftService: 'openshift-cluster-connection'
+        openshiftService: 'openshift-acs-demo'
         cmd: 'oc project $(project-name-dev)'
         uselocalOc: true
 
@@ -92,7 +92,7 @@ stages:
       displayName: Deploy Docker Image To DEV
       inputs:
         connectionType: 'OpenShift Connection Service'
-        openshiftService: 'openshift-cluster-connection'
+        openshiftService: 'openshift-acs-demo'
         cmd: 'oc set triggers dc/$(development-cfg-dev) --from-image=$(project-name-dev)/$(image-repository-dev):$(tag) -c $(container-name-dev)'
         uselocalOc: true
 
@@ -107,7 +107,7 @@ stages:
       displayName: Tag Docker Image
       inputs:
         connectionType: 'OpenShift Connection Service'
-        openshiftService: 'openshift-cluster-connection'
+        openshiftService: 'openshift-acs-demo'
         cmd: 'oc -n $(project-name-dev)  tag $(project-name-dev)/$(image-repository-dev):$(tag) $(project-name-uat)/$(image-repository-uat):$(tag)'
         uselocalOc: true
 
@@ -115,7 +115,7 @@ stages:
       displayName: Select UAT project To UAT
       inputs:
         connectionType: 'OpenShift Connection Service'
-        openshiftService: 'openshift-cluster-connection'
+        openshiftService: 'openshift-acs-demo'
         cmd: 'oc project $(project-name-uat)'
         uselocalOc: true
 
@@ -123,6 +123,6 @@ stages:
       displayName: 'Deploy To UAT'
       inputs:
         connectionType: 'OpenShift Connection Service'
-        openshiftService: 'openshift-cluster-connection'
+        openshiftService: 'openshift-acs-demo'
         cmd: 'oc set triggers dc/$(development-cfg-uat) --from-image=$(project-name-uat)/$(image-repository-uat):$(tag) -c $(container-name-uat)'
         uselocalOc: true
