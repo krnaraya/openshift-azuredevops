@@ -86,8 +86,8 @@ stages:
         mkdir $(System.DefaultWorkingDirectory)/artifacts
         curl -k -L -H "Authorization: Bearer $ROX_API_TOKEN" https://$ROX_CENTRAL_ENDPOINT/api/cli/download/roxctl-linux --output ./roxctl
         chmod +x ./roxctl
-        ./roxctl image scan -e $ROX_CENTRAL_ENDPOINT --insecure-skip-tls-verify --image '$(OPENSHIFT_ENDPOINT)/$(project-name-dev)/$(image-repository-dev)' --format csv > $(System.DefaultWorkingDirectory)/artifacts/image_scan.csv
-        ./roxctl image check -e $ROX_CENTRAL_ENDPOINT --insecure-skip-tls-verify --image '$(OPENSHIFT_ENDPOINT)/$(project-name-dev)/$(image-repository-dev)' > $(System.DefaultWorkingDirectory)/artifacts/image_check.txt
+        ./roxctl image scan -e $ROX_CENTRAL_ENDPOINT --insecure-skip-tls-verify --image '$(OPENSHIFT_ENDPOINT)/$(project-name-dev)/$(image-repository-dev):$(tag)' --format csv > $(System.DefaultWorkingDirectory)/artifacts/image_scan.csv
+        ./roxctl image check -e $ROX_CENTRAL_ENDPOINT --insecure-skip-tls-verify --image '$(OPENSHIFT_ENDPOINT)/$(project-name-dev)/$(image-repository-dev):$(tag)' > $(System.DefaultWorkingDirectory)/artifacts/image_check.txt
       displayName: 'ACS image scan'
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Pipeline Artifact'
