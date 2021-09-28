@@ -15,13 +15,13 @@ variables:
   development-cfg-uat: 'sample-uat'
   container-name-dev: 'sample-dev'
   container-name-uat: 'sample-uat'
-  - group: "Contoso Variable Group"
-  - name: va
-  value: $[variables.a]
-  - name: vb
-  value: $[variables.b]
-  - name: vcontososecret
-  value: $[variables.contososecret]
+  - group: "Red Hat ACS"
+  - name: ROX_API_TOKEN
+    value: $[variables.roxapitoken]
+  - name: ROX_CENTRAL_ENDPOINT
+    value: $[variables.roxcentralendpoint]
+  - name: OPENSHIFT_IMAGE_ENDPOINT
+    value: $[variables.openshiftimageendpoint]
 
 stages: 
 - stage: Build
@@ -93,10 +93,7 @@ stages:
         ./roxctl image scan -e $ROX_CENTRAL_ENDPOINT --insecure-skip-tls-verify --image '$(OPENSHIFT_IMAGE_ENDPOINT)/$(project-name-dev)/$(image-repository-dev):$(tag)' --format csv > $(System.DefaultWorkingDirectory)/artifacts/image_scan.csv
         ./roxctl image check -e $ROX_CENTRAL_ENDPOINT --insecure-skip-tls-verify --image '$(OPENSHIFT_IMAGE_ENDPOINT)/$(project-name-dev)/$(image-repository-dev):$(tag)' > $(System.DefaultWorkingDirectory)/artifacts/image_check.txt
       displayName: 'ACS image scan'
-      env: 
-        ROX_API_TOKEN: $(roxapitoken)
-        ROX_CENTRAL_ENDPOINT: '$(roxcentralendpoint)'
-        OPENSHIFT_IMAGE_ENDPOINT: '$(openshiftimageendpoint)'
+      
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Pipeline Artifact'
       inputs:
