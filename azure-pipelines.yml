@@ -15,6 +15,13 @@ variables:
   development-cfg-uat: 'sample-uat'
   container-name-dev: 'sample-dev'
   container-name-uat: 'sample-uat'
+  - group: "Contoso Variable Group"
+  - name: va
+  value: $[variables.a]
+  - name: vb
+  value: $[variables.b]
+  - name: vcontososecret
+  value: $[variables.contososecret]
 
 stages: 
 - stage: Build
