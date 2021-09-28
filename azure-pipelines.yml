@@ -15,7 +15,7 @@ variables:
   development-cfg-uat: 'sample-uat'
   container-name-dev: 'sample-dev'
   container-name-uat: 'sample-uat'
-
+  OPENSHIFT_IMAGE_ENDPOINT: default-route-openshift-image-registry.apps.cluster-w9dtc.w9dtc.sandbox1156.opentlc.com 
 
 stages: 
 - stage: Build
@@ -90,7 +90,6 @@ stages:
       env: 
         ROX_API_TOKEN: $(roxapitoken)
         ROX_CENTRAL_ENDPOINT: '$(roxcentralendpoint)'
-        OPENSHIFT_IMAGE_ENDPOINT: '$(openshiftimageendpoint)'
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Pipeline Artifact'
       inputs:
